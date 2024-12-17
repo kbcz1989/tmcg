@@ -1,0 +1,23 @@
+run:
+  timeout: 3m
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - revive
+    - errcheck
+    - gosimple
+    - staticcheck
+    - unused
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+linters-settings:
+  revive:
+    rules:
+      - name: var-naming
+        arguments:
+          - ["ID", "HTTP", "URL"]

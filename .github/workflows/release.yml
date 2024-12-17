@@ -1,0 +1,89 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Package All Binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          check-latest: true
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.8.5
+
+      - name: Install UPX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx
+
+      - name: Build and Compress All Binaries
+        run: |
+          mkdir -p build
+          VERSION=$(git describe --tags --always --dirty || echo "unknown")
+          COMMIT=$(git rev-parse --short HEAD || echo "unknown")
+          BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          SHA256SUM_FILE="build/SHA256SUMS"
+          > $SHA256SUM_FILE
+          for os in linux windows darwin; do
+            for arch in amd64 arm64; do
+              EXT=""
+              if [ "$os" == "windows" ]; then EXT=".exe"; fi
+              OUTPUT="build/tmcg-${os}-${arch}${EXT}"
+              echo "Building $OUTPUT..."
+              GOOS=$os GOARCH=$arch go build -ldflags="-s -w -X 'main.version=${VERSION}' -X 'main.commit=${COMMIT}' -X 'main.buildDate=${BUILD_DATE}'" -o $OUTPUT ./cmd/tmcg
+
+              # Compress the binary with UPX if supported
+              if [[ "$os" == "darwin" || ( "$os" == "windows" && "$arch" == "arm64" ) ]]; then
+                  echo "Skipping UPX compression for $OUTPUT as it is not supported on macOS or Windows ARM."
+              else
+                  echo "Compressing $OUTPUT..."
+                  upx --best --lzma "$OUTPUT"
+              fi
+
+              # Generate SHA256 checksum for the binary
+              echo "Generating checksum for $OUTPUT..."
+              sha256sum "$OUTPUT" >> $SHA256SUM_FILE
+            done
+          done
+          echo "All checksums written to $SHA256SUM_FILE"
+
+      - name: Upload Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmcg-binaries
+          path: build/*
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download Binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: tmcg-binaries
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            tmcg-*
+            SHA256SUMS
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

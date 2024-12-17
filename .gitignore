@@ -1,0 +1,54 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+*.o
+
+# Build directories
+/build/
+/bin/
+#/cmd/
+
+# Dependency directories
+/vendor/
+
+# Go specific files
+*.test
+*.prof
+*.log
+*.modcache/
+
+# IDE and editor specific
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+
+# Logs and runtime files
+*.log
+*.tmp
+*.pid
+*.lock
+
+# Coverage files
+*.cover
+*.cov
+coverage.out
+
+# Test results
+testdata/
+*_testresult.txt
+
+# Other system files
+Thumbs.db
+
+/terraform/
+/tmcg
+unit-test-report.xml
+coverage.*
