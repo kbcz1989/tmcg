@@ -121,7 +121,7 @@ Run the binary:
 
 | Flag                | Description                                                                         | Example                       |
 | ------------------- | ----------------------------------------------------------------------------------- | ----------------------------- |
-| `--provider, -p`    | Specify Terraform providers (e.g., `hashicorp/aws:>=3.0`).                          | `'-p hashicorp/aws:>=3.0'`    |
+| `--provider, -p`    | Specify Terraform providers (e.g., `'hashicorp/aws:>=3.0'`).                        | `-p 'hashicorp/aws:>=3.0'`    |
 | `--resource, -r`    | Specify resources (e.g., `aws_instance:single`, `azurerm_resource_group:multiple`). | `-r aws_instance:single`      |
 | `--directory, -d`   | The working directory for Terraform files.                                          | `-d ./output`                 |
 | `--binary, -b`      | The path to the Terraform binary.                                                   | `-b /usr/local/bin/terraform` |
