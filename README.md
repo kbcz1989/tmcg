@@ -52,6 +52,25 @@ A Go-based tool for dynamically generating Terraform modules, including `main.tf
 
 ## Installation
 
+### Installation with asdf version manager
+```shell
+# Add the plugin
+asdf plugin add tmcg https://github.com/kbcz1989/asdf-tmcg.git
+
+# Install a version
+asdf install tmcg latest
+
+# Set it globally
+asdf global tmcg latest
+
+# Verify installation
+tmcg --version
+```
+
+---
+
+### Manual installation
+
 ### Linux:
 
 ```shell
