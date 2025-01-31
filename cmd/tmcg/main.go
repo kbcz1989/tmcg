@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -156,10 +157,12 @@ func Run(exitFunc func(int), logger logging.Logger) {
 
 	// Validate Terraform binary
 	logger.Log("debug", "Using Terraform binary: %s", binaryPath)
-	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
-		logger.Log("error", "Terraform binary not found at: %s", binaryPath)
+	path, err := exec.LookPath(binaryPath)
+	if err != nil {
+		logger.Log("error", "Terraform binary not found in PATH: %s", binaryPath)
 		exitFunc(1)
 	}
+	logger.Log("debug", "Resolved Terraform binary path: %s", path)
 
 	// Start timer for execution
 	startTime := time.Now()
