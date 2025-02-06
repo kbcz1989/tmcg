@@ -294,6 +294,8 @@ func (t *Tf) CreateVariablesTF(dir string, cleanedSchema map[string]*tfjson.Prov
 				{Type: hclsyntax.TokenIdent, Bytes: []byte("}))")},
 				{Type: hclsyntax.TokenNewline, Bytes: []byte("\n")},
 			})
+
+			variableBody.SetAttributeRaw("default", hclwrite.TokensForIdentifier("null"))
 			rootBody.AppendNewline()
 		} else {
 			// Handle single mode
